@@ -353,10 +353,6 @@
             transform: scale(1.15) rotate(4deg);
         }
 
-        .gift-card:hover .gift-title {
-            color: #c2255c;
-        }
-
         .gift-title {
             font-weight: 600;
             color: #c2255c;
@@ -391,7 +387,8 @@
             height: 100%;
             background-image: url('bg-portrait.jpeg');
             background-size: cover;
-            background-position: center 15%;
+            background-position: center;
+            /* Pinned uniformly to the center to prevent top-heavy fading */
             opacity: 0.55;
             pointer-events: none;
             z-index: 1;
@@ -471,6 +468,7 @@
         }
 
         .polaroid {
+            overflow: hidden;
             background: #fff;
             padding: 12px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
@@ -478,7 +476,6 @@
             text-align: center;
             position: relative;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
         }
 
         .polaroid::after {
@@ -595,32 +592,41 @@
             line-height: 1.5;
         }
 
+        /* Letter Styling */
         .letter-text {
             white-space: pre-line;
-            font-size: 1.1rem;
             line-height: 1.8;
+            font-size: 1.1rem;
             color: #4a5568;
-            margin-top: 20px;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.75);
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 25px;
+            position: relative;
+            z-index: 4;
+            border: 1px solid rgba(252, 194, 215, 0.4);
+            text-align: left;
+            font-family: 'Playfair Display', serif;
         }
 
         .heart-trigger-section {
             margin: 30px 0;
-            text-align: center;
+            position: relative;
+            z-index: 5;
         }
 
         .smile-btn {
-            background: #c2255c;
+            background: linear-gradient(135deg, #e64980 0%, #c2255c 100%);
             color: white;
             border: none;
-            padding: 12px 28px;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
+            padding: 14px 28px;
+            font-size: 1.05rem;
             font-weight: 500;
-            box-shadow: 0 4px 15px rgba(194, 37, 92, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(194, 37, 92, 0.25);
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
 
         .smile-btn:hover {
@@ -1085,14 +1091,16 @@
                     </div>
                 </div>
             </div>
+
         </div>
+
     </div>
 
     <script>
         let rawLetterText = "";
         let typewriterTimeout;
 
-        // Curated romantic & sweet compliments for the floating engine
+        // Curated compliments for the floating engine
         const dynamicCompliments = [
             "Your smile genuinely brightens my whole day, Glory. ✨",
             "I love your energy and how effortless it is to talk to you. 🌹",
@@ -1104,10 +1112,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const letterEl = document.getElementById('letter-content');
-            if (letterEl) {
-                rawLetterText = letterEl.textContent.trim();
-                letterEl.textContent = "";
-            }
+            rawLetterText = letterEl.textContent.trim();
+            letterEl.textContent = "";
         });
 
         function openEnvelope() {
@@ -1148,7 +1154,7 @@
                 console.log("Initial confetti burst bypassed:", confettiError);
             }
 
-            // 4. STAGE TRANSITION
+            // 4. GUARANTEED STAGE TRANSITION
             const envStage = document.getElementById('envelope-stage');
             const transStage = document.getElementById('transition-stage');
             const menuStage = document.getElementById('menu-stage');
@@ -1209,9 +1215,7 @@
                 if (videoEl) { videoEl.play().catch(e => console.log("Autoplay paused:", e)); }
             }
 
-            if (typeof confetti === "function") {
-                confetti({ particleCount: 45, spread: 55, origin: { y: 0.85 } });
-            }
+            confetti({ particleCount: 45, spread: 55, origin: { y: 0.85 } });
         }
 
         function closeSurprise(boxId) {
@@ -1231,6 +1235,7 @@
             }
         }
 
+        // AMBIENT BACKGROUND SYSTEM: DROPPING PETALS & FLOATING HEARTS
         function startAmbientBackground() {
             const petalPool = ['🌸', '🌹', '💮'];
             const heartPool = ['💖', '❤️', '💕', '💘'];
@@ -1269,8 +1274,6 @@
         function runLetterTypewriter() {
             clearTimeout(typewriterTimeout);
             const targetEl = document.getElementById('letter-content');
-            if (!targetEl) return;
-            targetEl.classList.remove('typing-finished');
             targetEl.textContent = "";
             let pointer = 0;
 
@@ -1279,8 +1282,6 @@
                     targetEl.textContent += rawLetterText.charAt(pointer);
                     pointer++;
                     typewriterTimeout = setTimeout(appendChar, 25);
-                } else {
-                    targetEl.classList.add('typing-finished');
                 }
             }
             appendChar();
@@ -1310,14 +1311,12 @@
 
             document.body.appendChild(bubble);
 
-            if (typeof confetti === "function") {
-                confetti({
-                    particleCount: 15,
-                    spread: 40,
-                    origin: { x: clickX / window.innerWidth, y: clickY / window.innerHeight },
-                    colors: ['#ff8787', '#e64980', '#ffdbe9']
-                });
-            }
+            confetti({
+                particleCount: 15,
+                spread: 40,
+                origin: { x: clickX / window.innerWidth, y: clickY / window.innerHeight },
+                colors: ['#ff8787', '#e64980', '#ffdbe9']
+            });
 
             setTimeout(() => { bubble.remove(); }, 2800);
         }
@@ -1347,7 +1346,6 @@
         function toggleMute() {
             var audio = document.getElementById('bg-music');
             var control = document.getElementById('audio-control');
-            if (!audio || !control) return;
             if (audio.muted) {
                 audio.muted = false;
                 control.innerHTML = "🔊";
@@ -1357,7 +1355,7 @@
             }
         }
 
-        // Magic Touch Trail Engine
+        // Magic Touch Trail
         window.addEventListener('mousemove', (e) => spawnParticle(e.clientX, e.clientY));
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) spawnParticle(e.touches[0].clientX, e.touches[0].clientY);
